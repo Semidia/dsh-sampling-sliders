@@ -1,0 +1,9 @@
+# dsh-sampling-sliders bundle layer — applied when a profile lists this bundle
+# (package.json declares `dsh.bundle.patch` pointing at this file).
+#
+# `name` is the PACKAGE NAME (resolved through the profile's node_modules),
+# NOT a relative path. No `config` here: the interceptor follows the provider
+# default until the user sets values through the settings-driven sliders.
+- insert:
+    - id: sampling-sliders
+      name: dsh-sampling-sliders
