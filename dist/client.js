@@ -144,7 +144,7 @@ window.__ModuleLoader__.load({
               React.createElement('button', { className: mode === 'persist' ? 'on' : '', onClick: () => setMode('persist') }, '持久化')
             )
           ),
-          showHelp ? React.createElement('div', { className: 'dsp-help-text' }, '温度（temperature）：控制输出随机性/创造性。\n0 = 最确定保守，越大越随机、越有创意。\n· 0–0.3：编码 / 事实性任务\n· 0.7–1.0：创意写作 / 头脑风暴\n· 不勾选「覆盖」= 跟随模型默认。\n\n最大输出（maxTokens）：单次回答最多生成的 token 数，不是上下文长度（DeepSeek 上下文 1M）。') : null,
+          showHelp ? React.createElement('div', { className: 'dsp-help-text' }, '温度（temperature，0–2）：控制输出随机性/创造性。\n· 0 = 最确定保守（贪心）\n· 0–0.3：编码 / 事实性任务\n· 0.7–1.0：对话 / 创意写作\n· 1–2：高随机、高发散（DeepSeek 允许到 2）\n· 不勾选「覆盖」= 跟随模型默认。\n\n最大输出（maxTokens）：单次回答最多生成的 token 数，不是上下文长度（DeepSeek 上下文 1M）。') : null,
           React.createElement('div', { className: 'dsp-divider' }),
           React.createElement('div', { className: 'dsp-param' },
             React.createElement('div', { className: 'dsp-param-head' },
