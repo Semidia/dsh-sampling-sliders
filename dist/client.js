@@ -15,9 +15,13 @@ window.__ModuleLoader__.load({
       .dsp-trigger.has-override{border-color:var(--dsw-alias-brand-primary);color:var(--dsw-alias-brand-primary)}
       .dsp-trigger span,.dsp-trigger svg{flex:none}
       .dsp-backdrop{position:fixed;inset:0;z-index:9990;background:transparent}
-      .dsp-pop{position:absolute;bottom:calc(100% + 10px);right:0;z-index:9991;width:280px;max-width:calc(100vw - 24px);background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l2);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;color:var(--dsw-alias-label-primary);font-size:12px;line-height:1.5;box-shadow:0 10px 34px rgba(0,0,0,.3)}
+      .dsp-pop{position:absolute;bottom:calc(100% + 10px);right:0;z-index:9991;width:300px;max-width:calc(100vw - 24px);background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l2);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;color:var(--dsw-alias-label-primary);font-size:12px;line-height:1.5;box-shadow:0 10px 34px rgba(0,0,0,.3)}
       .dsp-pop-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+      .dsp-pop-head-left{display:flex;align-items:center;gap:6px;min-width:0}
       .dsp-pop-title{font-size:13px;font-weight:600;line-height:20px}
+      .dsp-help{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border:1px solid var(--dsw-alias-border-l2);border-radius:50%;background:transparent;color:var(--dsw-alias-label-secondary);font-size:11px;line-height:1;cursor:pointer;flex:none;padding:0}
+      .dsp-help:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+      .dsp-help-text{font-size:11px;line-height:1.7;color:var(--dsw-alias-label-secondary);border:1px solid var(--dsw-alias-border-l1);border-radius:8px;padding:8px 10px;white-space:pre-line}
       .dsp-mode{display:inline-flex;border:1px solid var(--dsw-alias-border-l2);border-radius:999px;overflow:hidden;flex:none}
       .dsp-mode button{border:0;background:transparent;color:var(--dsw-alias-label-secondary);padding:3px 10px;cursor:pointer;font-size:11px;line-height:18px}
       .dsp-mode button.on{background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font-weight:500}
@@ -63,6 +67,7 @@ window.__ModuleLoader__.load({
       const [revision, setRevision] = React.useState(0);
       const [status, setStatus] = React.useState('');
       const [loaded, setLoaded] = React.useState(false);
+      const [showHelp, setShowHelp] = React.useState(false);
 
       const load = React.useCallback(() => {
         api.settings.describe({}).then((res) => {
@@ -115,6 +120,7 @@ window.__ModuleLoader__.load({
       };
 
       const fmt = (n) => Number(n).toFixed(2);
+      const fmtMax = (n) => Number(n).toLocaleString();
       const anyOverride = overrideTemp || overrideMax;
 
       return React.createElement('div', { className: 'dsp-anchor' },
@@ -129,12 +135,16 @@ window.__ModuleLoader__.load({
         open ? React.createElement('div', { className: 'dsp-backdrop', onClick: () => setOpen(false) }) : null,
         open ? React.createElement('div', { className: 'dsp-pop' },
           React.createElement('div', { className: 'dsp-pop-head' },
-            React.createElement('span', { className: 'dsp-pop-title' }, '模型采样参数'),
+            React.createElement('div', { className: 'dsp-pop-head-left' },
+              React.createElement('span', { className: 'dsp-pop-title' }, '模型采样参数'),
+              React.createElement('button', { className: 'dsp-help', title: '温度 / 最大输出说明', onClick: () => setShowHelp((v) => !v) }, '?')
+            ),
             React.createElement('div', { className: 'dsp-mode' },
               React.createElement('button', { className: mode === 'hot' ? 'on' : '', onClick: () => setMode('hot') }, '热调'),
               React.createElement('button', { className: mode === 'persist' ? 'on' : '', onClick: () => setMode('persist') }, '持久化')
             )
           ),
+          showHelp ? React.createElement('div', { className: 'dsp-help-text' }, '温度（temperature）：控制输出随机性/创造性。\n0 = 最确定保守，越大越随机、越有创意。\n· 0–0.3：编码 / 事实性任务\n· 0.7–1.0：创意写作 / 头脑风暴\n· 不勾选「覆盖」= 跟随模型默认。\n\n最大输出（maxTokens）：单次回答最多生成的 token 数，不是上下文长度（DeepSeek 上下文 1M）。') : null,
           React.createElement('div', { className: 'dsp-divider' }),
           React.createElement('div', { className: 'dsp-param' },
             React.createElement('div', { className: 'dsp-param-head' },
@@ -158,10 +168,10 @@ window.__ModuleLoader__.load({
                 React.createElement('input', { type: 'checkbox', checked: overrideMax, onChange: (e) => setOverrideMax(e.target.checked) }),
                 React.createElement('span', null, '覆盖')
               ),
-              React.createElement('span', { className: 'dsp-val' }, overrideMax ? String(maxTokens) : '默认')
+              React.createElement('span', { className: 'dsp-val' }, overrideMax ? fmtMax(maxTokens) : '默认')
             ),
             React.createElement('input', {
-              type: 'range', className: 'dsp-slider', min: '512', max: '32768', step: '256',
+              type: 'range', className: 'dsp-slider', min: '512', max: '256000', step: '1024',
               value: overrideMax ? maxTokens : 4096, disabled: !overrideMax,
               onChange: (e) => setMaxTokens(Number(e.target.value)),
             })
